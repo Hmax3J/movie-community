@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
+	'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+<mapper namespace='com.my.movie.dao.map.ReviewMap'>
+	<insert id="insertReview">
+		INSERT INTO REVIEWS VALUES(
+			REVIEW_NUM_SEQ.NEXTVAL,
+			'${reviewContent}', 
+			TO_CHAR(SYSDATE, 'YYYY-MM-DD'),
+			${grade},
+			${userNum},
+			${movieNum}
+		)
+	</insert>
+	
+	<select id="selectReviewByMovieId" resultType="Review">
+		SELECT * FROM 
+		    (SELECT ROWNUM AS RN, REVIEWS.*, USERS.NICKNAME, USERS.USER_ID FROM REVIEWS 
+		    JOIN USERS ON REVIEWS.USER_NUM = USERS.USER_NUM)
+		WHERE 
+		    RN BETWEEN ${startIndex} AND ${rowCount} AND
+		    MOVIE_NUM = ${movieId}
+	</select>
+	
+	<delete id="deleteReview">
+		DELETE FROM REVIEWS WHERE REVIEW_NUM = ${reviewId}
+	</delete>
+</mapper>
