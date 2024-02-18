@@ -38,32 +38,67 @@ $(document).on("keyup", "input[phoneNum]", function() {
 })
 
 function join() {
-	$('#userId').keyup(function() {
-		let userId = /^[a-z0-9]{4,10}$/;
-		if(!(userId.test($('#userId').val()))) {
-			$('#idErrMsg').css('color', 'red').text('영문, 숫자 4자 이상 10자 이하로 입력하세요.')
-		} else {
-			$.ajax({
-				url: 'checkUserId',
-		      	method:'post',
-		      	contentType: 'application/json',
-		      	data: JSON.stringify({
-		    	  	userId: $('#userId').val()
-		      	}),
-		      	success: function(result) {
-		      		if(result == 1) {
-		      			$('#idErrMsg').css('color', 'red').text('이미 존재하는 아이디 입니다.')
-			   			$('#userId').focus()
-		      		} else {
-		      			$('#idErrMsg').css('color', 'blue').text('사용 가능한 아이디 입니다.')
-		      			$('#userId').blur(function() {
-		   					$('#idErrMsg').text('')
-		   				})
-		      		}
-		      	}
-		   	})
-		}
-	})
+    let timeoutId;
+
+    $('#userId').keyup(function() {
+        let userId = /^[a-z0-9]{4,10}$/;
+
+        if (!(userId.test($('#userId').val()))) {
+            $('#idErrMsg').css('color', 'red').text('영문, 숫자 4자 이상 10자 이하로 입력하세요.');
+        } else {
+            // 이전에 예약된 중복 체크 작업이 있다면 취소
+            clearTimeout(timeoutId);
+
+            // 새로운 중복 체크 작업 예약
+            timeoutId = setTimeout(function() {
+                $.ajax({
+                    url: 'checkUserId',
+                    method: 'post',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        userId: $('#userId').val()
+                    }),
+                    success: function(result) {
+                        if (result == 1) {
+                            $('#idErrMsg').css('color', 'red').text('이미 존재하는 아이디 입니다.');
+                            $('#userId').focus();
+                        } else {
+                            $('#idErrMsg').css('color', 'blue').text('사용 가능한 아이디 입니다.');
+                            $('#userId').blur(function() {
+                                $('#idErrMsg').text('');
+                            });
+                        }
+                    }
+                });
+            }, 500); // 500ms 디바운싱 지연 시간
+        }
+    });
+	// $('#userId').keyup(function() {
+	// 	let userId = /^[a-z0-9]{4,10}$/;
+	// 	if(!(userId.test($('#userId').val()))) {
+	// 		$('#idErrMsg').css('color', 'red').text('영문, 숫자 4자 이상 10자 이하로 입력하세요.')
+	// 	} else {
+	// 		$.ajax({
+	// 			url: 'checkUserId',
+	// 	      	method:'post',
+	// 	      	contentType: 'application/json',
+	// 	      	data: JSON.stringify({
+	// 	    	  	userId: $('#userId').val()
+	// 	      	}),
+	// 	      	success: function(result) {
+	// 	      		if(result == 1) {
+	// 	      			$('#idErrMsg').css('color', 'red').text('이미 존재하는 아이디 입니다.')
+	// 		   			$('#userId').focus()
+	// 	      		} else {
+	// 	      			$('#idErrMsg').css('color', 'blue').text('사용 가능한 아이디 입니다.')
+	// 	      			$('#userId').blur(function() {
+	// 	   					$('#idErrMsg').text('')
+	// 	   				})
+	// 	      		}
+	// 	      	}
+	// 	   	})
+	// 	}
+	// })
 	
 	$('#pw').keyup(function() {
 		let pw = /^[a-zA-Z0-9]{2,10}$/;

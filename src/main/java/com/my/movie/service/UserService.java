@@ -27,4 +27,5 @@ public interface UserService {
 	String findPw(UserDto userDto);
 	String findPw(String email, String userId);
 	void fixPw(User user);
+//	void addUserGenresLogic(String userId, List<Integer> genreNums);
 }

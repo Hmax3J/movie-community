@@ -98,6 +98,10 @@ public class UserController {
 		for(int genre: genres) {
 			userService.addUserGenre(userNum.getUserNum(), genre);
 		}
+	/*	User user = userGenre.getUser();
+		userService.addUser(user);
+		List<Integer> genres = userGenre.getGenreNum(); // 사용자 추가 후 바로 장르 추가
+		userService.addUserGenres(user.getUserId(), genres); */
 	}
 	
 	@GetMapping("fixUser")
