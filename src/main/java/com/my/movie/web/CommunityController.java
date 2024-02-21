@@ -16,6 +16,8 @@ import com.my.movie.domain.Community;
 import com.my.movie.domain.CommunityList;
 import com.my.movie.service.CommunityService;
 
+import javax.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("community")
 public class CommunityController {
@@ -55,7 +57,13 @@ public class CommunityController {
 	}
 	
 	@DeleteMapping("del/{communityNum}")
-	public void delCommunity(@PathVariable int communityNum) {
-		communityService.delCommunity(communityNum);
+	public void delCommunity(@PathVariable int communityNum, @RequestBody CommunityList nickname) {
+		String postNickname = communityService.getCommunity(communityNum).getNickname();
+
+		if(nickname.getNickname().equals(postNickname)) {
+			communityService.delCommunity(communityNum);
+		} else {
+			System.out.println("작성자만 삭제 가능합니다.");
+		}
 	}
 }

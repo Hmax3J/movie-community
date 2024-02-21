@@ -19,21 +19,40 @@
     request.setAttribute("communityNum", num);
 %>
 
+let postNickname = sessionStorage.getItem('nickname')
+let globalNickname
+
 function boardInit() {
     $('#delBoardBtn').click(() => {
-        $('#boardModalHeadMsg').text('영화평 삭제')
+        if(postNickname === globalNickname) {
+            $('#boardModalHeadMsg').text('영화평 삭제')
 
-        $('#boardModalBodyMsg').text("삭제 하시겠습니까?")
-        $('#boardInspectionReasonInput').hide()
+            $('#boardModalBodyMsg').text("삭제 하시겠습니까?")
+            $('#boardInspectionReasonInput').hide()
 
-        $('#delBoardYesBtn').show()
-        $('#delBoardNoBtn').show()
-        $('#delBoardOkBtn').show()
-        $('#boardInspectionCancelBtn').hide()
-        $('#boardInspectionCheckBtn').hide()
-        $('#boardInspectionOkBtn').hide()
+            $('#delBoardYesBtn').show()
+            $('#delBoardNoBtn').show()
+            $('#delBoardOkBtn').show()
+            $('#boardInspectionCancelBtn').hide()
+            $('#boardInspectionCheckBtn').hide()
+            $('#boardInspectionOkBtn').hide()
 
-        $('#boardModal').modal()
+            $('#boardModal').modal()
+        } else {
+            $('#boardModalHeadMsg').text('영화평 삭제')
+
+            $('#boardModalBodyMsg').text("작성자만 삭제 가능합니다.")
+            $('#delBoardNoBtn').show()
+
+            $('#delBoardYesBtn').hide()
+            $('#boardInspectionReasonInput').hide()
+            $('#boardInspectionCancelBtn').hide()
+            $('#boardInspectionCheckBtn').hide()
+            $('#boardInspectionOkBtn').hide()
+
+            $('#boardModal').modal()
+        }
+
     })
 
     $('#delBoardOkBtn').click(() => {
@@ -41,6 +60,9 @@ function boardInit() {
             url: 'del/${communityNum}',
             method:'delete',
             contentType: 'application/json',
+            data: JSON.stringify({
+                nickname: postNickname
+            }),
             success: location.href='list'
         })
         $('#boardModal').modal('hide')
@@ -138,6 +160,7 @@ function init() {
 			communityNum: ${communityNum} }),
 		success: content => {
 			if(content) {
+                globalNickname = content.nickname
 				$('#title').text(content.communityTitle)
 				$('#content').text(content.communityContent)
 				$('#nickname').text(content.nickname)

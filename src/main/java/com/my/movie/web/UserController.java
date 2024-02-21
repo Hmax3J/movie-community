@@ -46,6 +46,7 @@ public class UserController {
 			} else {
 				session.setAttribute("userId", user.getUserId());
 				session.setAttribute("userNum", user.getUserNum());
+                session.setAttribute("nickname", user.getNickname());
 			}
 		}
 		return user;

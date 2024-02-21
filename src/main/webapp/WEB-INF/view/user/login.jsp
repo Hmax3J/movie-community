@@ -36,6 +36,7 @@ function login() {
 		    	  	pw: $('#pw').val()
 		      	}),
 		      	success: function(user) {
+					sessionStorage.setItem('nickname', user.nickname)
 		      		if(!user) {
 					   	$('#errMsg').text('아이디 또는 비밀번호가 틀렸습니다.')
 					   	$('input').val('')
