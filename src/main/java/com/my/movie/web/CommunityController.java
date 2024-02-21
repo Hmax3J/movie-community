@@ -40,7 +40,6 @@ public class CommunityController {
 	
 	@PostMapping("getContent")
 	public CommunityList getContent(@RequestBody Community communityNum) {
-		System.out.println(communityService.getCommunity(communityNum.getCommunityNum()));
 		return communityService.getCommunity(communityNum.getCommunityNum());
 	}
 	

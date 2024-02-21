@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	@Transactional
+	//@Transactional
 	public void addUserGenre(int userNum, int genreNum) {
 		userDao.insertUserGenre(userNum, genreNum);
 /*		try {

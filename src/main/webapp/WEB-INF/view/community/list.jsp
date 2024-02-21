@@ -21,7 +21,7 @@ function init() {
     	        $.each(result, (i, community) => {
     	            communityArr.push(
                 			`<li class='row pt-3 pb-3 list-unstyled border-bottom'>
-	                			<span class='col-1'>\${community.communityNum}</span>
+	                		<!--	<span class='col-1'>\${community.communityNum}</span> -->
 	                			<a href='content?num=\${community.communityNum}'>
 	                				<span class='col-2'>\${community.communityTitle}</span>
 	                			</a>

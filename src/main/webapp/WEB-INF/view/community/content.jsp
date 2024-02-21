@@ -13,7 +13,12 @@
 <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js'></script>
 <script src="https://kit.fontawesome.com/449f39a7b2.js" crossorigin="anonymous"></script>
 <!-- 영화평/댓글 modal script -->
-<script>    
+<script>
+<%
+	int num = Integer.parseInt(request.getParameter("num"));
+    request.setAttribute("communityNum", num);
+%>
+
 function boardInit() {
     $('#delBoardBtn').click(() => {
         $('#boardModalHeadMsg').text('영화평 삭제')
@@ -23,12 +28,22 @@ function boardInit() {
 
         $('#delBoardYesBtn').show()
         $('#delBoardNoBtn').show()
-        $('#delBoardOkBtn').hide()
+        $('#delBoardOkBtn').show()
         $('#boardInspectionCancelBtn').hide()
         $('#boardInspectionCheckBtn').hide()
         $('#boardInspectionOkBtn').hide()
 
         $('#boardModal').modal()
+    })
+
+    $('#delBoardOkBtn').click(() => {
+        $.ajax({
+            url: 'del/${communityNum}',
+            method:'delete',
+            contentType: 'application/json',
+            success: location.href='list'
+        })
+        $('#boardModal').modal('hide')
     })
 
     $('#inspectionBoardBtn').click(() => {
@@ -115,17 +130,13 @@ function replyInit() {
 }
 
 function init() {
-<%
-	int num = Integer.parseInt(request.getParameter("num"));
-%>
 	$.ajax({
 		url: 'getContent',
 		method: 'post',
 		contentType: 'application/json',
 		data: JSON.stringify({
-			communityNum: <%= num %>}), 
+			communityNum: ${communityNum} }),
 		success: content => {
-			console.log(content)
 			if(content) {
 				$('#title').text(content.communityTitle)
 				$('#content').text(content.communityContent)
@@ -420,7 +431,7 @@ label {
                     <button type='button' class='btn btn-secondary btn-block' data-dismiss='modal'>취소</button>
                 </div>
                 <div class='col' id='delBoardYesBtn'>
-                    <button type='button' id='delBoardYesBtn' class='btn btn-primary btn-block' onclick='location.href="list"'>확인</button>
+                    <button type='button' id='delBoardOkBtn' class='btn btn-primary btn-block' onclick='location.href="list"'>확인</button>
                 </div>                
                 <div class='col' id='boardInspectionCancelBtn'> 
                     <button type='button' class='btn btn-secondary btn-block' data-dismiss='modal'>취소</button>
