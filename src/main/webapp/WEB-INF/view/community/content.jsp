@@ -346,15 +346,23 @@ label {
 	        </tr>
 	    </table>
     </div>
-    <div>
-     	<div class='row ml-1' >작성자:&nbsp;
-     		<div id='nickname'>
-     		</div>
-     	</div>
-    	<div class='row ml-1'>작성일:&nbsp;
-    		<div id='date'>
-    		</div>
-    	</div>
+    <div class="row mt-3">
+        <div class="col d-flex">
+            <!-- 작성자 표시 -->
+            <div class="ml-1">작성자&nbsp;
+                <div id="nickname"></div>
+            </div>
+            <!-- 작성일 표시 -->
+            <div class="ml-4">작성일&nbsp;
+                <div id="date"></div>
+            </div>
+            <!-- 이전 페이지로 돌아가는 링크 추가 -->
+            <div class="ml-auto">
+                <a href="list">
+                    <button id="backToListBtn" type="button" class="btn btn-primary">목록</button>
+                </a>
+            </div>
+        </div>
     </div>
 
 <!-- 영화평 공감 버튼 -->
