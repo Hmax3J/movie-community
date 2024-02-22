@@ -27,7 +27,12 @@ public class CommunityServiceImpl implements CommunityService {
 	public void addCommunity(Community community) {
 		communityDao.insertCommunity(community);
 	}
-	
+
+	@Override
+	public void fixCommunityContent(Community communityContent) {
+		communityDao.updateCommunityContent(communityContent);
+	}
+
 	@Override
 	public void delCommunity(int communityNum) {
 		communityDao.deleteCommunity(communityNum);

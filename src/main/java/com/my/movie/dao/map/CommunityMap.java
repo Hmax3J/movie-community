@@ -9,6 +9,7 @@ public interface CommunityMap {
 	List<CommunityList> selectCommunities();
 	CommunityList selectCommunity(int communityNum);
 	void insertCommunity(Community community);
+	void updateCommunityContent(Community communityContent);
 	void deleteCommunity(int communityNum);
 	void inspectionCommunity(int community);
 }

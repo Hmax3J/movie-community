@@ -21,38 +21,95 @@
 
 let postNickname = sessionStorage.getItem('nickname')
 let globalNickname
+let postTitle
+let postContent
+
+function init() {
+    $.ajax({
+        url: 'getContent',
+        method: 'post',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            communityNum: ${communityNum} }),
+        success: content => {
+            if(content) {
+                globalNickname = content.nickname
+                $('#title').text(content.communityTitle)
+                $('#content').text(content.communityContent)
+                $('#nickname').text(content.nickname)
+                $('#date').text(content.communityDate)
+                postTitle = content.communityTitle
+                postContent = content.communityContent
+                $(boardInit)
+                $('#editBoardBtn').click(() => {
+                    $('#editBoardModal').modal('show')
+                    $('#editTitleInput').val(postTitle)
+                    $('#editContentInput').val(postContent)
+                })
+            }
+        }
+    })
+}
+function updateBoardContent() {
+    // 제목과 내용을 가져오기
+    let title = $('#editTitleInput').val().trim();
+    let content = $('#editContentInput').val().trim();
+
+    // 최소 2글자 이상인지 확인
+    if (title.length < 2 || content.length < 2) {
+        // 최소 길이 요구사항 미달 시 모달로 알림 표시
+        $('#editTitleInput').val(title); // 기존 입력값 복원
+        $('#editContentInput').val(content); // 기존 입력값 복원
+        $('#editModalErrorMsg').text("제목과 내용은 2글자 이상 입력해야 합니다.");
+        $('#editModalError').modal('show');
+        return;
+    } else {
+        $.ajax({
+            url: 'update', // 수정된 내용을 처리할 서버의 경로
+            method: 'post',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                communityNum: ${communityNum},
+                communityTitle: title,
+                communityContent: content
+            }),
+            success: function(result) {
+                if (result) {
+                    $('#editBoardModal').modal('hide');
+                    postTitle = title
+                    postContent = content
+                    // 수정된 내용을 화면에 반영
+                    $('#title').text(title);
+                    $('#content').text(content);
+                }
+            }
+        })
+    }
+
+    // 모달 닫기
+    $('#editBoardModal').modal('hide');
+}
 
 function boardInit() {
+    if(postNickname !== globalNickname) {
+        $('#editBoardBtn').remove()
+        $('#delBoardBtn').remove()
+    }
+
     $('#delBoardBtn').click(() => {
-        if(postNickname === globalNickname) {
-            $('#boardModalHeadMsg').text('영화평 삭제')
+        $('#boardModalHeadMsg').text('영화평 삭제')
 
-            $('#boardModalBodyMsg').text("삭제 하시겠습니까?")
-            $('#boardInspectionReasonInput').hide()
+        $('#boardModalBodyMsg').text("삭제 하시겠습니까?")
+        $('#boardInspectionReasonInput').hide()
 
-            $('#delBoardYesBtn').show()
-            $('#delBoardNoBtn').show()
-            $('#delBoardOkBtn').show()
-            $('#boardInspectionCancelBtn').hide()
-            $('#boardInspectionCheckBtn').hide()
-            $('#boardInspectionOkBtn').hide()
+        $('#delBoardYesBtn').show()
+        $('#delBoardNoBtn').show()
+        $('#delBoardOkBtn').show()
+        $('#boardInspectionCancelBtn').hide()
+        $('#boardInspectionCheckBtn').hide()
+        $('#boardInspectionOkBtn').hide()
 
-            $('#boardModal').modal()
-        } else {
-            $('#boardModalHeadMsg').text('영화평 삭제')
-
-            $('#boardModalBodyMsg').text("작성자만 삭제 가능합니다.")
-            $('#delBoardNoBtn').show()
-
-            $('#delBoardYesBtn').hide()
-            $('#boardInspectionReasonInput').hide()
-            $('#boardInspectionCancelBtn').hide()
-            $('#boardInspectionCheckBtn').hide()
-            $('#boardInspectionOkBtn').hide()
-
-            $('#boardModal').modal()
-        }
-
+        $('#boardModal').modal()
     })
 
     $('#delBoardOkBtn').click(() => {
@@ -68,110 +125,94 @@ function boardInit() {
         $('#boardModal').modal('hide')
     })
 
-    $('#inspectionBoardBtn').click(() => {
-        $('#boardModalHeadMsg').text('영화평 신고')
 
-        $('#boardModalBodyMsg').text('신고 사유를 입력해주세요.')
-        $('#boardInspectionReasonInput').show()
 
-        $('#delBoardYesBtn').hide()
-        $('#delBoardNoBtn').hide()
-        $('#delBoardOkBtn').hide()        
-        $('#boardInspectionCancelBtn').show()
-        $('#boardInspectionCheckBtn').show()
-        $('#boardInspectionOkBtn').hide()
 
-        $('#boardModal').modal()
-    })
-
-    $('#boardInspectionYesBtn').click(() => {
-        $('#boardModalBodyMsg').text('신고해주셔서 감사합니다. 신고된 내용은 내부 검토를 통해 삭제여부를 확인해보도록 하겠습니다.')
-        $('#boardInspectionReasonInput').hide()
-
-        $('#boardInspectionCancelBtn').hide()
-        $('#boardInspectionCheckBtn').hide()
-        $('#boardInspectionOkBtn').show()
-
-        $('#boardModal').modal()
-    })
+    // $('#inspectionBoardBtn').click(() => {
+    //     $('#boardModalHeadMsg').text('영화평 신고')
+    //
+    //     $('#boardModalBodyMsg').text('신고 사유를 입력해주세요.')
+    //     $('#boardInspectionReasonInput').show()
+    //
+    //     $('#delBoardYesBtn').hide()
+    //     $('#delBoardNoBtn').hide()
+    //     $('#delBoardOkBtn').hide()
+    //     $('#boardInspectionCancelBtn').show()
+    //     $('#boardInspectionCheckBtn').show()
+    //     $('#boardInspectionOkBtn').hide()
+    //
+    //     $('#boardModal').modal()
+    // })
+    //
+    // $('#boardInspectionYesBtn').click(() => {
+    //     $('#boardModalBodyMsg').text('신고해주셔서 감사합니다. 신고된 내용은 내부 검토를 통해 삭제여부를 확인해보도록 하겠습니다.')
+    //     $('#boardInspectionReasonInput').hide()
+    //
+    //     $('#boardInspectionCancelBtn').hide()
+    //     $('#boardInspectionCheckBtn').hide()
+    //     $('#boardInspectionOkBtn').show()
+    //
+    //     $('#boardModal').modal()
+    // })
 }
 
-function replyInit() {
-    $('#delReplyBtn').click(() => {
-        $('#modalHeadMsg').text('댓글 삭제')
+// function replyInit() {
+//     $('#delReplyBtn').click(() => {
+//         $('#modalHeadMsg').text('댓글 삭제')
+//
+//         $('#modalBodyMsg').text('해당 댓글을 삭제하시겠습니까?')
+//         $('#inpectionReasonInput').hide()
+//
+//         $('#delReplyYesBtn').show()
+//         $('#delReplyNoBtn').show()
+//         $('#delReplyOkBtn').hide()
+//         $('#inpectionCancelBtn').hide()
+//         $('#inpectionCheckBtn').hide()
+//         $('#inpectionOkBtn').hide()
+//
+//         $('#replyModal').modal()
+//     })
+//
+//     $('#delYesBtn').click(() => {
+//         $('#modalBodyMsg').text('댓글이 삭제 되었습니다.')
+//
+//         $('#delReplyYesBtn').hide()
+//         $('#delReplyNoBtn').hide()
+//         $('#delReplyOkBtn').show()
+//
+//         $('replyModal').modal()
+//     })
+//
+//     $('#inpectionReplyBtn').click(() => {
+//         $('#modalHeadMsg').text('댓글 신고')
+//
+//         $('#modalBodyMsg').text('신고 사유를 입력해주세요.')
+//         $('#inpectionReasonInput').show()
+//
+//         $('#delReplyYesBtn').hide()
+//         $('#delReplyNoBtn').hide()
+//         $('#delReplyOkBtn').hide()
+//         $('#inpectionCancelBtn').show()
+//         $('#inpectionCheckBtn').show()
+//         $('#inpectionOkBtn').hide()
+//
+//         $('#replyModal').modal()
+//     })
+//
+//     $('#inpectionYesBtn').click(() => {
+//         $('#modalBodyMsg').text('신고해주셔서 감사합니다. 신고된 내용은 내부 검토를 통해 삭제여부를 확인해보도록 하겠습니다.')
+//         $('#inpectionReasonInput').hide()
+//
+//         $('#inpectionCancelBtn').hide()
+//         $('#inpectionCheckBtn').hide()
+//         $('#inpectionOkBtn').show()
+//
+//         $('#replyModal').modal()
+//     })
+// }
 
-        $('#modalBodyMsg').text('해당 댓글을 삭제하시겠습니까?')
-        $('#inpectionReasonInput').hide()
-
-        $('#delReplyYesBtn').show()
-        $('#delReplyNoBtn').show()
-        $('#delReplyOkBtn').hide()
-        $('#inpectionCancelBtn').hide()
-        $('#inpectionCheckBtn').hide()
-        $('#inpectionOkBtn').hide()
-
-        $('#replyModal').modal()
-    })
-
-    $('#delYesBtn').click(() => {
-        $('#modalBodyMsg').text('댓글이 삭제 되었습니다.')
-
-        $('#delReplyYesBtn').hide()
-        $('#delReplyNoBtn').hide()
-        $('#delReplyOkBtn').show()
-
-        $('replyModal').modal()
-    })
-
-    $('#inpectionReplyBtn').click(() => {
-        $('#modalHeadMsg').text('댓글 신고')
-
-        $('#modalBodyMsg').text('신고 사유를 입력해주세요.')
-        $('#inpectionReasonInput').show()
-
-        $('#delReplyYesBtn').hide()
-        $('#delReplyNoBtn').hide()
-        $('#delReplyOkBtn').hide()        
-        $('#inpectionCancelBtn').show()
-        $('#inpectionCheckBtn').show()
-        $('#inpectionOkBtn').hide()
-
-        $('#replyModal').modal()
-    })
-
-    $('#inpectionYesBtn').click(() => {
-        $('#modalBodyMsg').text('신고해주셔서 감사합니다. 신고된 내용은 내부 검토를 통해 삭제여부를 확인해보도록 하겠습니다.')
-        $('#inpectionReasonInput').hide()
-
-        $('#inpectionCancelBtn').hide()
-        $('#inpectionCheckBtn').hide()
-        $('#inpectionOkBtn').show()
-
-        $('#replyModal').modal()
-    })
-}
-
-function init() {
-	$.ajax({
-		url: 'getContent',
-		method: 'post',
-		contentType: 'application/json',
-		data: JSON.stringify({
-			communityNum: ${communityNum} }),
-		success: content => {
-			if(content) {
-                globalNickname = content.nickname
-				$('#title').text(content.communityTitle)
-				$('#content').text(content.communityContent)
-				$('#nickname').text(content.nickname)
-				$('#date').text(content.communityDate)
-			}
-		}
-	})
-}
-$(boardInit)
-$(replyInit)
 $(init)
+//$(replyInit)
 </script>
 </head>
 <style>
@@ -287,21 +328,20 @@ label {
                         <button type='button' class='btn btnBack' data-toggle='dropdown'>
                             <i class="fa-solid fa-ellipsis-vertical fa-lg"></i>
                         </button>
-                            
-                        <div class='dropdown-menu'>
-                            <a class='dropdown-item' id='delBoardBtn'>삭제</a>
-                            <div class='dropdown-divider'></div>
-                            <a class='dropdown-item' id='inspectionBoardBtn'>신고</a>
-                        </div>
+                        <ul class='dropdown-menu'>
+                            <li><a class='dropdown-item' id='editBoardBtn'>수정</a></li>
+                            <li><a class='dropdown-item' id='delBoardBtn'>삭제</a></li>
+                            <li><a class='dropdown-item' id='inspectionBoardBtn'>신고</a></li>
+                        </ul>
                     </div>
                 </div>
-            </td>    
-        </tr>        
+            </td>
+        </tr>
     </table>
 
     <div class= "board-box" style="background-color: #dbe8fb; border: #79a5e4 1px solid; padding: 10px;">
         <table>
-	        <tr>	
+	        <tr>
 	        	<td id='content'></td>
 	        </tr>
 	    </table>
@@ -332,7 +372,7 @@ label {
     </button>
 </div>
 
-<div>    
+<div>
 <hr style="border: double 1px grey;">
 </div>
 
@@ -391,7 +431,7 @@ label {
                         <a class='dropdown-item' id='inpectionReplyBtn'>신고</a>
                     </div>
                 </div>
-            </li>                    
+            </li>
             <li id='replyBg' class='list-group-item'>
                 <div class='col mb-3'>
                     너무 기대 되요<br> <!-- 해당 댓글의 내용-->
@@ -404,9 +444,9 @@ label {
                     3   <!-- 공감표시 수 -->
                     <a href='03.html'> <i id='nonEmpathy' class="bi bi-hand-thumbs-down-fill"></i></a>
                 </div>
-            </li>   
+            </li>
         </div>
-    </div>    
+    </div>
 
     <div class='row mb-1'>
         <div class='col flex-low mt-3'>
@@ -421,7 +461,7 @@ label {
             <textarea class='form-control col-10' rows='1' placeholder='댓글을 작성해주세요.'></textarea>
             <a href='03.html'>
                 <button id='regReplyBtn' type="button" class="btn btn-primary">등록</button>
-            </a>                
+            </a>
         </div>
     </div>
 </div>
@@ -436,7 +476,7 @@ label {
             <div></div>
         </div>
     </div>
-</footer>  
+</footer>
 
 <!-- 영화평 modal -->
 <div class='modal fade' tabindex='-1' id='boardModal'>
@@ -455,16 +495,61 @@ label {
                 </div>
                 <div class='col' id='delBoardYesBtn'>
                     <button type='button' id='delBoardOkBtn' class='btn btn-primary btn-block' onclick='location.href="list"'>확인</button>
-                </div>                
-                <div class='col' id='boardInspectionCancelBtn'> 
+                </div>
+                <div class='col' id='boardInspectionCancelBtn'>
                     <button type='button' class='btn btn-secondary btn-block' data-dismiss='modal'>취소</button>
                 </div>
                 <div class='col' id='boardInspectionCheckBtn'>
                     <button type='button' id='boardInspectionYesBtn' class='btn btn-primary btn-block'>확인</button>
-                </div>      
+                </div>
                 <div class='col' id='boardInspectionOkBtn'>
                     <button type='button' class='btn btn-primary btn-block' data-dismiss='modal' onclick='location.href="list"'>확인</button>
-                </div>   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 수정 모달 -->
+<div class="modal fade" id="editBoardModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">영화평 수정</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label>제목:</label>
+                <input type="text" class="form-control" id="editTitleInput">
+                <br>
+                <label>내용:</label>
+                <textarea class="form-control" id="editContentInput" rows="5"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" onclick="updateBoardContent()">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 수정 모달에서 발생한 오류를 알리는 모달 -->
+<div class="modal fade" id="editModalError">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">알림</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="editModalErrorMsg"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">확인</button>
             </div>
         </div>
     </div>
@@ -487,7 +572,7 @@ label {
                 </div>
                 <div class='col' id='delReplyYesBtn'>
                     <button type='button' id='delYesBtn' class='btn btn-primary btn-block'>확인</button>
-                </div>                
+                </div>
                 <div class='col' id='delReplyOkBtn'>
                     <button type='button' class='btn btn-primary btn-block' data-dismiss='modal'>확인</button>
                 </div>
@@ -496,10 +581,10 @@ label {
                 </div>
                 <div class='col' id='inpectionCheckBtn'>
                     <button type='button' id='inpectionYesBtn' class='btn btn-primary btn-block'>확인</button>
-                </div>      
+                </div>
                 <div class='col' id='inpectionOkBtn'>
                     <button type='button' class='btn btn-primary btn-block' data-dismiss='modal'>확인</button>
-                </div>   
+                </div>
             </div>
         </div>
     </div>

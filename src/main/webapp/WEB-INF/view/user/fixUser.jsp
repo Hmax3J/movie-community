@@ -190,7 +190,7 @@ function init() {
      		    }),
      		    success: result => {
      		    	if(result == 1) {
-     		    		location.href='mypage' 
+     		    		location.href='mypage'
      		    	}
      		    }
             })

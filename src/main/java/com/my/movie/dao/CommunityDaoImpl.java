@@ -27,7 +27,12 @@ public class CommunityDaoImpl implements CommunityDao {
 	public void insertCommunity(Community community) {
 		communityMap.insertCommunity(community);
 	}
-	
+
+	@Override
+	public void updateCommunityContent(Community communityContent) {
+		communityMap.updateCommunityContent(communityContent);
+	}
+
 	@Override
 	public void deleteCommunity(int communityNum) {
 		communityMap.deleteCommunity(communityNum);

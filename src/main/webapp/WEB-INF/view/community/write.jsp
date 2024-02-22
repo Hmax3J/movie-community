@@ -13,20 +13,31 @@
 <script>
 function init() {
 	$('#writePostBtn').click(() => {
-		if(${not empty userId}) {
-			$.ajax({
-				url: 'write',
-				method: 'post',
-				contentType: 'application/json',
-				data: JSON.stringify({
-					communityTitle: $('#communityTitle').val(),
-					communityContent: $('#communityContent').val(),
-					userNum: $('#userNum').val()
-				}),
-				success: location.href = 'list'
-			})
+		// 제목과 내용을 가져옵니다.
+		let title = $('#communityTitle').val();
+		let content = $('#communityContent').val();
+
+		// 최소 입력 길이를 검사합니다.
+		if (title.length < 2 || content.length < 2) {
+			// 모달을 띄우고 추가 버튼 동작을 중단합니다.
+			$('#lengthModal').modal('show');
+			return;
+		} else {
+			if(${not empty userId}) {
+				$.ajax({
+					url: 'write',
+					method: 'post',
+					contentType: 'application/json',
+					data: JSON.stringify({
+						communityTitle: $('#communityTitle').val(),
+						communityContent: $('#communityContent').val(),
+						userNum: $('#userNum').val()
+					}),
+					success: location.href = 'list'
+				})
+			}
 		}
-	})	
+	})
 }
 $(init)
 </script>
@@ -50,16 +61,10 @@ nav a {
    color: lightgray;
 }
 
-
-.fa-tv {
-	text-decoration: none;
-	color: black;
+body {
+	overflow: hidden;
 }
 
-label {
-    font-size:12px;
-    width: 1px;
-}
 </style>
 </head>
 <body>
@@ -79,7 +84,7 @@ label {
 </c:if>
 <c:if test='${not empty userId}'>
 	<div class="container text-center">
-	    <h2><strong><br>커뮤니티</strong></h2>
+	    <h2><strong>커뮤니티</strong></h2>
 	    <hr style="border: double 1px black;">
 	    <h3><em><u>영화평</u></em></h3>
     	<div style="border:1px solid; padding:10px;">
@@ -98,13 +103,13 @@ label {
 				    <textarea class="form-control" rows="10" id="communityContent"
 					    name="communityContent" placeholder="글쓰기 (2자 이상 1000자 이하)"
 					    minlength="2" maxlength="1000" required="required"
-					    pattern=".{2,1000}">
-					</textarea>
+					    pattern=".{2,1000}"></textarea>
 			   	</div>
 				<div class="rows">
-	      			<div class='row mt-3 p-3 border-top'>
-	        			<button id='writePostBtn' type='button' class='btn btn-success border btn-block'>추가</button>
-	   				</div>
+					<div class="row mt-3 p-3 border-top">
+						<button id="cancelBtn" type="button" class="btn btn-secondary border w-50" onclick='location.href="list"'>취소</button>
+						<button id="writePostBtn" type="button" class="btn btn-success border w-50">추가</button>
+					</div>
 				</div>
 				<div id='navBar' class='container-fulid'>
 	       			<nav class='row fixed-bottom p-2'>
@@ -139,6 +144,26 @@ label {
 	</div>
 </c:if>
 </body>
+
+<div class="modal fade" id="lengthModal" tabindex="-1" role="dialog" aria-labelledby="lengthModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="lengthModalLabel">알림</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				제목과 글 내용은 2자 이상 입력하세요.
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 <footer class='container-fulid border mt-5 p-3 '>
 	<div class='row m-3'>
 		<div class='col-sm-3 border d-flex justify-content-center align-items-center'>

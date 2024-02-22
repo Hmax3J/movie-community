@@ -31,6 +31,12 @@
 		 community_content, community_date, user_num)
 		values(community_num_seq.nextval, #{communityTitle}, #{communityContent}, sysdate, #{userNum})
 	</insert>
+
+	<update id='updateCommunityContent'>
+		update communities
+		set community_title = #{communityTitle}, community_content = #{communityContent}
+		where community_num = #{communityNum}
+	</update>
 	
 	<delete id='deleteCommunity'>
 		delete communities
